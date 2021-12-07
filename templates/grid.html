@@ -1,0 +1,24 @@
+{{ define "title" }} Grid {{ end }}
+{{ define "view" }}
+
+<main>
+    <h1>Grid page</h1>
+    <p>
+        <b>session:</b>
+        <span>{{ .Session }}</span>
+    </p>
+    <form live-submit="createUser">
+        <div class="mb-3">
+            <label for="inputEmail" class="form-label">Email address</label>
+            <input name="email" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
+            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+        </div>
+        <div class="mb-3">
+            <label for="inputAge" class="form-label">Age</label>
+            <input name="age" type="text" class="form-control" id="inputAge">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</main>
+
+{{ end }}

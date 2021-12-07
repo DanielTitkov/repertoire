@@ -1,11 +1,15 @@
 {{ define "title" }} Repetoire {{ end }}
-{{ define "home" }}
+{{ define "view" }}
 
 <main>
     <h1>Hello, world!</h1>
     <p>Some text here from home</p>
     <p>This app let's you create your Repetoire Grid</p>
+    <p>
+        <b>session:</b>
+        <span>{{ .Session }}</span>
+    </p>
+    <a class="btn btn-primary btn-lg" href="/grid">Start</a>
 </main>
-
 
 {{ end }}
