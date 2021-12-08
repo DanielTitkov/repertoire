@@ -7,7 +7,39 @@
         <b>session:</b>
         <span>{{ .Session }}</span>
     </p>
-    <form live-submit="createUser">
+    <div>
+        <h3>Grid config</h3>
+        <p><b>Min terms</b> {{ .Config.MinTerms }}</p>
+        <p><b>Max terms</b> {{ .Config.MaxTerms }}</p>
+        <p><b>TermsN</b> {{ .TermsN }}</p>
+        <p>{{ .Terms }}</p>
+    </div>
+    <div>
+        <div class="hstack gap-3">
+        {{ range $i, $_ := N .TermsN }}
+            <h4>
+                <span class="badge bg-secondary">
+                    <span id="gridTerm_{{$i}}">
+                        {{ (index $.Terms $i).Title }}
+                    </span>
+                    <button live-value-termID="{{$i}}" live-click="removeTerm" type="button" class="btn btn-secondary"
+                        id="remove-term-button">
+                        <i class="bi-trash"></i>
+                    </button>
+                </span>
+            </h4>
+            {{ end }}
+        </div>
+        <form id="add-term-form" live-submit="addTerm" live-hook="addTermHook">
+            <div class="input-group mb-3">
+                <input autocomplete="off" name="term" type="text" class="form-control">
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">Add term</button>
+            </div>
+        </form>
+    </div>
+    <!-- <form live-submit="createUser">
         <div class="mb-3">
             <label for="inputEmail" class="form-label">Email address</label>
             <input name="email" type="email" class="form-control" id="inputEmail" aria-describedby="emailHelp">
@@ -18,7 +50,19 @@
             <input name="age" type="text" class="form-control" id="inputAge">
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    </form> -->
 </main>
+
+<script>
+    window.Hooks = {
+        "addTermHook": {
+            mounted: function () {
+                this.el.addEventListener("submit", () => {
+                    this.el.querySelector("input").value = "";
+                });
+            }
+        }
+    };
+</script>
 
 {{ end }}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/DanielTitkov/repertoire/internal/app"
@@ -12,6 +13,8 @@ import (
 )
 
 func main() {
+	log.Println("Starting server...")
+
 	h := handler.NewHandler(
 		&app.App{},
 		"templates/",

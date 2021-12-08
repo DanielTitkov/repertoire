@@ -7,39 +7,45 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/DanielTitkov/repertoire/internal/domain"
+	"github.com/bradfitz/iter"
+
 	"github.com/jfyne/live"
 )
 
 const (
 	// events
 	eventCreateUser = "createUser"
+	eventAddTerm    = "addTerm"
+	eventRemoveTerm = "removeTerm"
+	eventUpdateTerm = "updateTerm"
 	// params
-	paramEmail = "email"
-	paramAge   = "age"
+	paramEmail  = "email"
+	paramAge    = "age"
+	paramTermID = "termid"
 )
 
-type (
-	GridModel struct {
-		Session string
-	}
-)
+var funcMap = template.FuncMap{
+	"N": iter.N,
+}
 
-func NewGridModel(s *live.Socket) *GridModel {
-	m, ok := s.Assigns().(*GridModel)
+func AssignGridModel(s *live.Socket) *domain.Grid {
+	m, ok := s.Assigns().(*domain.Grid)
 	if !ok {
-		return &GridModel{
-			Session: fmt.Sprint(s.Session),
-		}
+		return domain.NewGrid(
+			domain.GridConfig{
+				MinTerms: 5,
+				MaxTerms: 12,
+			},
+			fmt.Sprint(s.Session),
+		)
 	}
 
 	return m
 }
 
 func (h *Handler) Grid() *live.Handler {
-	t, err := template.ParseFiles(h.t+"layout.html", h.t+"grid.html")
-	if err != nil {
-		log.Fatal(err)
-	}
+	t := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles(h.t+"layout.html", h.t+"grid.html"))
 
 	lvh, err := live.NewHandler(live.NewCookieStore("session-name", []byte("weak-secret")), live.WithTemplateRenderer(t))
 	if err != nil {
@@ -48,7 +54,7 @@ func (h *Handler) Grid() *live.Handler {
 
 	// Set the mount function for this handler.
 	lvh.Mount = func(ctx context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
-		return NewGridModel(s), nil
+		return AssignGridModel(s), nil
 	}
 
 	lvh.HandleEvent(eventCreateUser, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
@@ -56,8 +62,59 @@ func (h *Handler) Grid() *live.Handler {
 		age := p.Int(paramAge)
 		fmt.Println("lvh grid params", email, age)
 
-		return NewGridModel(s), nil
+		return AssignGridModel(s), nil
 	})
+
+	lvh.HandleEvent(eventAddTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		termValue := p.String("term")
+		err := m.AddTerm(domain.Term{Title: termValue})
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("term", termValue)
+		fmt.Printf("grid model %+v\n", m)
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventRemoveTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		termID := p.Int(paramTermID)
+		fmt.Println(eventRemoveTerm, termID)
+		fmt.Println("model before remove", m)
+		m.RemoveTermByIndex(termID)
+		fmt.Println("model after remove", m)
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventUpdateTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		// FIXME this doesn't work correctly
+		m := AssignGridModel(s)
+		// fmt.Println(eventUpdateTerm, p)
+		return m, nil
+	})
+
+	// lvh.HandleEvent(eventUpdateTerms, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+	// 	m := AssignGridModel(s)
+	// 	var newTerms []domain.Term
+	// 	for i := range iter.N(m.TermsN) {
+	// 		termValue := p.String("term-" + strconv.Itoa(i))
+	// 		if termValue != "" {
+	// 			newTerms = append(newTerms, domain.Term{Title: termValue})
+	// 		}
+	// 	}
+
+	// 	m.UpdateTerms(newTerms)
+
+	// 	fmt.Println(eventUpdateTerms, p, m)
+	// 	return m, nil
+	// })
+
+	// lvh.HandleSelf(eventAppendTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+	// 	m := AssignGridModel(s)
+
+	// 	return m, nil
+	// })
 
 	return lvh
 }

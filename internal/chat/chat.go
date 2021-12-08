@@ -63,6 +63,7 @@ func NewHandler() *live.Handler {
 
 	// Handle user sending a message.
 	h.HandleEvent(send, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		// time.Sleep(1 * time.Second)
 		m := NewChatInstance(s)
 		msg := p.String("message")
 		if msg == "" {
