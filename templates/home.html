@@ -2,14 +2,13 @@
 {{ define "view" }}
 
 <main>
-    <h1>Hello, world!</h1>
-    <p class="text-sm">Some text here from home</p>
-    <p class="text-4xl text-red-400">This app let's you create your Repetoire Grid</p>
-    <p>
+    <h1 class="title is-1">Hello, Grid!</h1>
+    <h3 class="subtitle is-3">This app let's you create your Repetoire Grid</h3>
+    <p class="box">
         <b>session:</b>
         <span>{{ .Session }}</span>
     </p>
-    <a class="btn btn-primary btn-lg" href="/grid">Start</a>
+    <a class="button is-large is-primary" href="/grid">Start</a>
 </main>
 
 {{ end }}

@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/DanielTitkov/repertoire/internal/domain"
 	"github.com/bradfitz/iter"
@@ -26,19 +27,35 @@ const (
 )
 
 var funcMap = template.FuncMap{
-	"N": iter.N,
+	"N":     iter.N,
+	"Title": strings.Title,
 }
 
-func AssignGridModel(s *live.Socket) *domain.Grid {
-	m, ok := s.Assigns().(*domain.Grid)
+type (
+	GridModel struct {
+		Grid         *domain.Grid
+		Session      string
+		AddTermError string
+	}
+)
+
+func (gm *GridModel) clearErrors() {
+	gm.AddTermError = ""
+}
+
+func AssignGridModel(s *live.Socket) *GridModel {
+	m, ok := s.Assigns().(*GridModel)
 	if !ok {
-		return domain.NewGrid(
-			domain.GridConfig{
-				MinTerms: 5,
-				MaxTerms: 12,
-			},
-			fmt.Sprint(s.Session),
-		)
+		return &GridModel{
+			Grid: domain.NewGrid(
+				domain.GridConfig{
+					MinTerms: 5,
+					MaxTerms: 12,
+				},
+			),
+			Session: fmt.Sprint(s.Session),
+		}
+
 	}
 
 	return m
@@ -67,23 +84,23 @@ func (h *Handler) Grid() *live.Handler {
 
 	lvh.HandleEvent(eventAddTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 		m := AssignGridModel(s)
+		m.clearErrors()
 		termValue := p.String("term")
-		err := m.AddTerm(domain.Term{Title: termValue})
+		err := m.Grid.AddTerm(domain.Term{Title: termValue})
 		if err != nil {
-			fmt.Println(err)
+			m.AddTermError = err.Error()
 		}
-		fmt.Println("term", termValue)
-		fmt.Printf("grid model %+v\n", m)
+
 		return m, nil
 	})
 
 	lvh.HandleEvent(eventRemoveTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 		m := AssignGridModel(s)
+		m.clearErrors()
 		termID := p.Int(paramTermID)
-		fmt.Println(eventRemoveTerm, termID)
-		fmt.Println("model before remove", m)
-		m.RemoveTermByIndex(termID)
-		fmt.Println("model after remove", m)
+
+		m.Grid.RemoveTermByIndex(termID)
+
 		return m, nil
 	})
 

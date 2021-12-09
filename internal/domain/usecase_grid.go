@@ -6,11 +6,9 @@ import (
 
 func NewGrid(
 	cfg GridConfig,
-	session string,
 ) *Grid {
 	return &Grid{
-		Session: session,
-		Config:  cfg,
+		Config: cfg,
 	}
 }
 

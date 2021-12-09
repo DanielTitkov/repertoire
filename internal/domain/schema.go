@@ -7,7 +7,6 @@ type (
 	}
 	// Grid encapsulates repetoire grid data
 	Grid struct {
-		Session    string
 		Config     GridConfig
 		Terms      []Term // TODO: maybe use pointer
 		Constructs []Construct
