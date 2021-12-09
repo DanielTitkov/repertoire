@@ -1,0 +1,40 @@
+{{define "grid-triads"}}
+<div class="box">
+  <h3 class="title">Triads</h3>
+  <h5 class="subtitle">Here we will elicit constructs using triad method</h5>
+
+  {{ range $i, $triad := .Grid.Triads }}
+  <form id="triad-form-{{$i}}" class="block">
+    <div class="tile is-parent">
+      <div class="tile is-child notification is-4 is-link">
+        {{ range $j, $term := $triad.LeftTerms }}
+        <p class="title is-4"><b>{{ $term.Title }}</b></p>
+        {{end}}
+      </div>
+      <div class="tile is-4 notification">
+        <p class="is-size-5">Чем два объекта слева похожи между собой и при этом отличаются от объекта справа?</p>
+      </div>
+      <div class="tile is-child notification is-4 is-danger">
+        {{ range $j, $term := $triad.RightTerms }}
+        <p class="title is-4"><b>{{ $term.Title }}</b></p>
+        {{end}}
+      </div>
+    </div>
+  </form>
+  {{ end }}
+
+
+  <p class="block is-size-5">When you are happy with added terms please continue to the next step.</p>
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div class="block">
+        <button class="button is-large is-success" live-click="generateTriads" {{ if (lt (len .Grid.Terms)
+          .Grid.Config.MinTerms) }}disabled{{ end }}>Continue</button>
+        {{ if (lt (len .Grid.Terms) .Grid.Config.MinTerms) }}
+        <p class="help is-size-6 is-link">Min number of terms is {{ .Grid.Config.MinTerms }}</p>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}

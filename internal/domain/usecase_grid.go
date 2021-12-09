@@ -3,6 +3,10 @@ package domain
 import (
 	"errors"
 	"fmt"
+	"math/rand"
+	"time"
+
+	"github.com/DanielTitkov/repertoire/internal/util"
 )
 
 func NewGrid(
@@ -10,6 +14,7 @@ func NewGrid(
 ) *Grid {
 	return &Grid{
 		Config: cfg,
+		Step:   GridStepTerms,
 	}
 }
 
@@ -39,5 +44,45 @@ func (g *Grid) AddTerm(term Term) error {
 	}
 
 	g.Terms = append(g.Terms, term)
+	return nil
+}
+
+func (g *Grid) GenerateTriads() error {
+	var indices []int
+	for i := range g.Terms {
+		indices = append(indices, i)
+	}
+
+	// get all possible term index combinations by 3
+	subsets := util.Combinations(indices, 3)
+
+	// randomize subsets
+	rand.Seed(time.Now().UnixNano())
+	for _, a := range subsets {
+		rand.Shuffle(len(a), func(i, j int) { a[i], a[j] = a[j], a[i] })
+	}
+	rand.Shuffle(len(subsets), func(i, j int) { subsets[i], subsets[j] = subsets[j], subsets[i] })
+
+	// make triads
+	var triads []*Triad
+	for _, subset := range subsets {
+		triad := &Triad{}
+		for _, idx := range subset {
+			triad.LeftTerms = append(triad.LeftTerms, &g.Terms[idx])
+		}
+
+		switch g.Config.TriadMethod {
+		case TriadMethodForced:
+			// move random item from left to right
+			triad.MoveFromLeft(rand.Intn(3))
+		case TriadMethodChoice:
+		default:
+			return fmt.Errorf("unknown triad method: %s", g.Config.TriadMethod)
+		}
+		triads = append(triads, triad)
+	}
+
+	g.Triads = triads
+
 	return nil
 }

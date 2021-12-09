@@ -16,10 +16,9 @@ import (
 
 const (
 	// events
-	eventCreateUser = "createUser"
-	eventAddTerm    = "addTerm"
-	eventRemoveTerm = "removeTerm"
-	eventUpdateTerm = "updateTerm"
+	eventAddTerm        = "addTerm"
+	eventRemoveTerm     = "removeTerm"
+	eventGenerateTriads = "generateTriads"
 	// params
 	paramEmail  = "email"
 	paramAge    = "age"
@@ -49,8 +48,9 @@ func AssignGridModel(s *live.Socket) *GridModel {
 		return &GridModel{
 			Grid: domain.NewGrid(
 				domain.GridConfig{
-					MinTerms: 5,
-					MaxTerms: 12,
+					MinTerms:    5,
+					MaxTerms:    12,
+					TriadMethod: domain.TriadMethodForced,
 				},
 			),
 			Session: fmt.Sprint(s.Session),
@@ -62,7 +62,13 @@ func AssignGridModel(s *live.Socket) *GridModel {
 }
 
 func (h *Handler) Grid() *live.Handler {
-	t := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles(h.t+"layout.html", h.t+"grid.html", h.t+"alerts.html"))
+	t := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles(
+		h.t+"layout.html",
+		h.t+"grid.html",
+		h.t+"grid_terms.html",
+		h.t+"grid_triads.html",
+		h.t+"alerts.html",
+	))
 
 	lvh, err := live.NewHandler(live.NewCookieStore("session-name", []byte("weak-secret")), live.WithTemplateRenderer(t))
 	if err != nil {
@@ -73,14 +79,6 @@ func (h *Handler) Grid() *live.Handler {
 	lvh.Mount = func(ctx context.Context, r *http.Request, s *live.Socket) (interface{}, error) {
 		return AssignGridModel(s), nil
 	}
-
-	lvh.HandleEvent(eventCreateUser, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-		email := p.String(paramEmail)
-		age := p.Int(paramAge)
-		fmt.Println("lvh grid params", email, age)
-
-		return AssignGridModel(s), nil
-	})
 
 	lvh.HandleEvent(eventAddTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 		m := AssignGridModel(s)
@@ -104,12 +102,26 @@ func (h *Handler) Grid() *live.Handler {
 		return m, nil
 	})
 
-	lvh.HandleEvent(eventUpdateTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-		// FIXME this doesn't work correctly
+	lvh.HandleEvent(eventGenerateTriads, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 		m := AssignGridModel(s)
-		// fmt.Println(eventUpdateTerm, p)
+		m.clearErrors()
+
+		err := m.Grid.GenerateTriads()
+		if err != nil {
+			fmt.Println(eventGenerateTriads, err)
+		}
+
+		m.Grid.Step = domain.GridStepTriads // TODO: maybe move inside method
+
 		return m, nil
 	})
+
+	// lvh.HandleEvent(eventUpdateTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+	// 	// FIXME this doesn't work correctly
+	// 	m := AssignGridModel(s)
+	// 	// fmt.Println(eventUpdateTerm, p)
+	// 	return m, nil
+	// })
 
 	// lvh.HandleEvent(eventUpdateTerms, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 	// 	m := AssignGridModel(s)

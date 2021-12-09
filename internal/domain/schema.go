@@ -10,15 +10,24 @@ type (
 		Config     GridConfig
 		Terms      []Term // TODO: maybe use pointer
 		Constructs []Construct
+		Triads     []*Triad
+		Step       string
 	}
 	Term struct {
 		Title string
+	}
+	Triad struct {
+		LeftTerms  []*Term
+		RightTerms []*Term
+		LeftPole   string
+		RightPole  string
 	}
 	Construct struct {
 		Title string
 	}
 	GridConfig struct {
-		MinTerms int
-		MaxTerms int
+		TriadMethod string
+		MinTerms    int
+		MaxTerms    int
 	}
 )

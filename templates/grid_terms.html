@@ -1,0 +1,51 @@
+{{define "grid-terms"}}
+<div class="box">
+  <h3 class="title">Terms</h3>
+  <h5 class="subtitle">Here you can add terms</h5>
+  <div class="tags are-large">
+    {{ range $i, $_ := .Grid.Terms }}
+    <span class="tag is-link">
+      <span id="gridTerm_{{$i}}">
+        <b>{{ (index $.Grid.Terms $i).Title }}</b>
+      </span>
+      <button live-value-termID="{{$i}}" live-click="removeTerm" type="button" class="delete" id="remove-term-button">
+        <i class="bi-trash"></i>
+      </button>
+    </span>
+    {{ end }}
+  </div>
+  <form class="block" id="add-term-form" live-submit="addTerm" live-hook="addTermHook">
+    {{ if .AddTermError }}
+    {{ template "alert-warning" .AddTermError | Title }}
+    {{ end }}
+    <div class="field has-addons">
+      <div class="control is-expanded">
+        <input class="input is-medium" placeholder="Add term..." autocomplete="off" name="term" type="text" {{ if (ge
+          (len .Grid.Terms) .Grid.Config.MaxTerms) }}disabled{{ end }}>
+      </div>
+      <div class="control">
+        <button type="submit" class="button is-link is-medium" {{ if (ge (len .Grid.Terms) .Grid.Config.MaxTerms)
+          }}disabled{{ end }}>
+          <i class="bi-plus" style="font-size: 1.5rem;"></i>
+        </button>
+      </div>
+    </div>
+    {{ if (ge (len .Grid.Terms) .Grid.Config.MaxTerms) }}
+    <p class="help is-size-6 is-link">Max number of terms is {{ .Grid.Config.MaxTerms }}</p>
+    {{ end }}
+  </form>
+
+  <p class="block is-size-5">When you are happy with added terms please continue to the next step.</p>
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div class="block">
+        <button class="button is-large is-success" live-click="generateTriads" {{ if (lt (len .Grid.Terms)
+          .Grid.Config.MinTerms) }}disabled{{ end }}>Continue</button>
+        {{ if (lt (len .Grid.Terms) .Grid.Config.MinTerms) }}
+        <p class="help is-size-6 is-link">Min number of terms is {{ .Grid.Config.MinTerms }}</p>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+</div>
+{{end}}
