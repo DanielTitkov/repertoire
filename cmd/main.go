@@ -27,5 +27,12 @@ func main() {
 	// live scripts
 	http.Handle("/live.js", live.Javascript{})
 	http.Handle("/auto.js.map", live.JavascriptMap{})
+	// favicon
+	http.HandleFunc("/favicon.ico", faviconHandler)
+	// serve
 	http.ListenAndServe(":8080", nil)
+}
+
+func faviconHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "web/favicon.ico")
 }

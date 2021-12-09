@@ -8,13 +8,14 @@
     <p><b>session:</b><span>{{ .Session }}</span></p>
     <p><b>Min terms</b> {{ .Grid.Config.MinTerms }}</p>
     <p><b>Max terms</b> {{ .Grid.Config.MaxTerms }}</p>
-    <p><b>TermsN</b> {{ .Grid.TermsN }}</p>
     <p>{{ .Grid.Terms }}</p>
   </div>
 
   <div class="box">
+    <h3 class="title">Add Terms</h3>
+    <h5 class="subtitle">Here you can add terms</h5>
     <div class="tags are-large">
-      {{ range $i, $_ := N .Grid.TermsN }}
+      {{ range $i, $_ := .Grid.Terms }}
       <span class="tag is-link">
         <span id="gridTerm_{{$i}}">
           <b>{{ (index $.Grid.Terms $i).Title }}</b>
@@ -25,21 +26,42 @@
       </span>
       {{ end }}
     </div>
-    <form id="add-term-form" live-submit="addTerm" live-hook="addTermHook">
+    <form class="block" id="add-term-form" live-submit="addTerm" live-hook="addTermHook">
       {{ if .AddTermError }}
-      <div class="notification is-warning level">
-        <span><strong>{{ .AddTermError | Title }}</strong></span>
-        <i class="bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
-      </div>
+      {{ template "alert-warning" .AddTermError | Title }}
       {{ end }}
-      <div class="field">
-        <input class="input" placeholder="Enter term..." autocomplete="off" name="term" type="text">
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <input class="input is-medium" placeholder="Add term..." autocomplete="off" name="term" type="text" {{ if (ge
+            (len .Grid.Terms) .Grid.Config.MaxTerms) }}disabled{{ end }}>
+        </div>
+        <div class="control">
+          <button type="submit" class="button is-link is-medium" {{ if (ge (len .Grid.Terms) .Grid.Config.MaxTerms)
+            }}disabled{{ end }}>
+            <i class="bi-plus" style="font-size: 1.5rem;"></i>
+          </button>
+        </div>
       </div>
-      <div>
-        <button type="submit" class="button is-success is-medium">Add term</button>
-      </div>
+      {{ if (ge (len .Grid.Terms) .Grid.Config.MaxTerms) }}
+      <p class="help is-size-6 is-link">Max number of terms is {{ .Grid.Config.MaxTerms }}</p>
+      {{ end }}
     </form>
+
+    <p class="block is-size-5">When you are happy with added terms please continue to the next step.</p>
+    <div class="level">
+      <div class="level-item has-text-centered">
+        <div class="block">
+          <button class="button is-large is-success" {{ if (lt (len .Grid.Terms) .Grid.Config.MinTerms) }}disabled{{ end
+            }}>Continue</button>
+          {{ if (lt (len .Grid.Terms) .Grid.Config.MinTerms) }}
+          <p class="help is-size-6 is-link">Min number of terms is {{ .Grid.Config.MinTerms }}</p>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+
   </div>
+
 </main>
 
 <script>

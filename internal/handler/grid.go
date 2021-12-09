@@ -62,7 +62,7 @@ func AssignGridModel(s *live.Socket) *GridModel {
 }
 
 func (h *Handler) Grid() *live.Handler {
-	t := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles(h.t+"layout.html", h.t+"grid.html"))
+	t := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles(h.t+"layout.html", h.t+"grid.html", h.t+"alerts.html"))
 
 	lvh, err := live.NewHandler(live.NewCookieStore("session-name", []byte("weak-secret")), live.WithTemplateRenderer(t))
 	if err != nil {

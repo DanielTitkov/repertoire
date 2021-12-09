@@ -10,7 +10,6 @@ type (
 		Config     GridConfig
 		Terms      []Term // TODO: maybe use pointer
 		Constructs []Construct
-		TermsN     int
 	}
 	Term struct {
 		Title string
