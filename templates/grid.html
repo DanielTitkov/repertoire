@@ -10,13 +10,14 @@
     <p><b>Max terms</b> {{ .Grid.Config.MaxTerms }}</p>
     <p>{{ .Grid.Terms }}</p>
     <p>{{ .Grid.Triads }}</p>
+    <p><b>Current triad:</b> {{ .CurrentTriadID }}</p>
   </div>
 
   {{ if eq .Grid.Step "terms" }}
   {{ template "grid-terms" . }}
   {{end}}
 
-  {{ if eq .Grid.Step "triads" }}
+  {{ if eq .Grid.Step "elicit" }}
   {{ template "grid-triads" . }}
   {{end}}
 

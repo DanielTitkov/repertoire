@@ -19,10 +19,20 @@ const (
 	eventAddTerm        = "addTerm"
 	eventRemoveTerm     = "removeTerm"
 	eventGenerateTriads = "generateTriads"
+	eventMoveTerm       = "moveTerm"
+	eventUpdateTriad    = "updateTriad"
+	eventNextTriad      = "nextTriad"
 	// params
-	paramEmail  = "email"
-	paramAge    = "age"
-	paramTermID = "termid"
+	paramEmail        = "email"
+	paramAge          = "age"
+	paramTermID       = "termid"
+	paramTriadID      = "triadid"
+	paramMoveTermFrom = "from"
+	paramLeftPole     = "leftPole"
+	paramRightPole    = "rightPole"
+	// params values
+	valueMoveTermFromLeft  = "left"
+	valueMoveTermFromRight = "right"
 )
 
 var funcMap = template.FuncMap{
@@ -32,9 +42,11 @@ var funcMap = template.FuncMap{
 
 type (
 	GridModel struct {
-		Grid         *domain.Grid
-		Session      string
-		AddTermError string
+		Grid              *domain.Grid
+		Session           string
+		AddTermError      string
+		FormFieldDebounce int // ms
+		CurrentTriadID    int
 	}
 )
 
@@ -50,12 +62,13 @@ func AssignGridModel(s *live.Socket) *GridModel {
 				domain.GridConfig{
 					MinTerms:    5,
 					MaxTerms:    12,
-					TriadMethod: domain.TriadMethodForced,
+					TriadMethod: domain.TriadMethodChoice,
 				},
 			),
-			Session: fmt.Sprint(s.Session),
+			Session:           fmt.Sprint(s.Session),
+			FormFieldDebounce: 400,
+			CurrentTriadID:    0,
 		}
-
 	}
 
 	return m
@@ -111,33 +124,60 @@ func (h *Handler) Grid() *live.Handler {
 			fmt.Println(eventGenerateTriads, err)
 		}
 
-		m.Grid.Step = domain.GridStepTriads // TODO: maybe move inside method
+		m.Grid.Step = domain.GridStepElicitation // TODO: maybe move inside method
+		m.CurrentTriadID = 0                     // set first triad
+
+		// TODO handle if for some reason there is no triads
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventMoveTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		m.clearErrors()
+
+		termID := p.Int(paramTermID)
+		triad := m.Grid.GetTriadByIndex(p.Int(paramTriadID))
+
+		switch from := p.String(paramMoveTermFrom); from {
+		case valueMoveTermFromLeft:
+			err := triad.MoveFromLeft(termID)
+			if err != nil {
+				return m, err
+			}
+		case valueMoveTermFromRight:
+			err := triad.MoveFromRight(termID)
+			if err != nil {
+				return m, err
+			}
+		default:
+			return m, fmt.Errorf("unknown term move direction: %s", from)
+		}
 
 		return m, nil
 	})
 
-	// lvh.HandleEvent(eventUpdateTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-	// 	// FIXME this doesn't work correctly
-	// 	m := AssignGridModel(s)
-	// 	// fmt.Println(eventUpdateTerm, p)
-	// 	return m, nil
-	// })
+	lvh.HandleEvent(eventUpdateTriad, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		m.clearErrors()
 
-	// lvh.HandleEvent(eventUpdateTerms, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
-	// 	m := AssignGridModel(s)
-	// 	var newTerms []domain.Term
-	// 	for i := range iter.N(m.TermsN) {
-	// 		termValue := p.String("term-" + strconv.Itoa(i))
-	// 		if termValue != "" {
-	// 			newTerms = append(newTerms, domain.Term{Title: termValue})
-	// 		}
-	// 	}
+		fmt.Println(eventUpdateTriad, p)
 
-	// 	m.UpdateTerms(newTerms)
+		m.Grid.GetTriadByIndex(m.CurrentTriadID).SetPoles(
+			p.String(paramLeftPole),
+			p.String(paramRightPole),
+		)
 
-	// 	fmt.Println(eventUpdateTerms, p, m)
-	// 	return m, nil
-	// })
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventNextTriad, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		m.clearErrors()
+
+		fmt.Println(eventUpdateTriad, p)
+
+		return m, nil
+	})
 
 	// lvh.HandleSelf(eventAppendTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 	// 	m := AssignGridModel(s)

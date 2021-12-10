@@ -66,9 +66,9 @@ func (g *Grid) GenerateTriads() error {
 	// make triads
 	var triads []*Triad
 	for _, subset := range subsets {
-		triad := &Triad{}
+		triad := NewTriad()
 		for _, idx := range subset {
-			triad.LeftTerms = append(triad.LeftTerms, &g.Terms[idx])
+			triad.AddLeftTerm(&g.Terms[idx])
 		}
 
 		switch g.Config.TriadMethod {
@@ -85,4 +85,9 @@ func (g *Grid) GenerateTriads() error {
 	g.Triads = triads
 
 	return nil
+}
+
+func (g *Grid) GetTriadByIndex(idx int) *Triad {
+	// TODO add error on bad index
+	return g.Triads[idx]
 }

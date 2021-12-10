@@ -4,6 +4,12 @@ const (
 	TriadMethodForced = "forcedTriads"
 	TriadMethodChoice = "choiceTriads"
 
-	GridStepTerms  = "terms"
-	GridStepTriads = "triads"
+	GridStepTerms       = "terms"
+	GridStepElicitation = "elicit"
+
+	TriadStepRaw      = "raw"      // empty object
+	TriadStepInit     = "init"     // with terms on one side
+	TriadStepChosen   = "chosen"   // with differing term chosend
+	TriadStepLeftDone = "leftDone" // with left pole done
+	TriadStepReady    = "ready"    // with both poles done
 )

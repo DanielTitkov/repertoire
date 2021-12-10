@@ -4,25 +4,107 @@
   <h5 class="subtitle">Here we will elicit constructs using triad method</h5>
 
   {{ range $i, $triad := .Grid.Triads }}
-  <form id="triad-form-{{$i}}" class="block">
-    <div class="tile is-parent">
-      <div class="tile is-child notification is-4 is-link">
-        {{ range $j, $term := $triad.LeftTerms }}
-        <p class="title is-4"><b>{{ $term.Title }}</b></p>
-        {{end}}
+  {{ if eq $.CurrentTriadID $i }}
+  <form id="triad-form-{{$i}}" class="block" live-value-triadid={{$i}} live-change="updateTriad"
+    live-submit="nextTriad">
+    <div class="tile is-ancestor">
+      <div class="tile is-parent is-6">
+        <div class="tile is-child notification is-link">
+          {{ range $j, $term := $triad.LeftTerms }}
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <p class="title is-4"><b>{{ $term.Title }}</b></p>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <button live-click="moveTerm" type="button" live-value-triadid={{$i}} live-value-termid={{$j}}
+                  live-value-from="left" class="button is-dark is-rounded level-item" {{ if le (len $triad.LeftTerms) 2
+                  }}disabled{{end}}>
+                  <span class="icon">
+                    <i class="bi bi-arrow-right"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+          {{end}}
+        </div>
       </div>
-      <div class="tile is-4 notification">
-        <p class="is-size-5">Чем два объекта слева похожи между собой и при этом отличаются от объекта справа?</p>
+
+      <div class="tile is-parent is-6">
+        <div class="tile is-child notification is-danger">
+          {{ range $j, $term := $triad.RightTerms }}
+          <div class="level">
+            <div class="level-left">
+              <div class="level-item">
+                <button live-click="moveTerm" type="button" live-value-triadid={{$i}} live-value-termid={{$j}}
+                  live-value-from="right" class="button is-dark is-rounded">
+                  <span class="icon">
+                    <i class="bi bi-arrow-left"></i>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div class="level-right">
+              <div class="level-item">
+                <p class="title is-4"><b>{{ $term.Title }}</b></p>
+              </div>
+            </div>
+          </div>
+          {{end}}
+        </div>
       </div>
-      <div class="tile is-child notification is-4 is-danger">
-        {{ range $j, $term := $triad.RightTerms }}
-        <p class="title is-4"><b>{{ $term.Title }}</b></p>
-        {{end}}
+    </div>
+
+
+    {{ if ne $triad.Step "init" }}
+    <div class="tile is-ancestor">
+      <div class="tile is-parent is-6">
+        <div class="tile is-child">
+          <div class="field">
+            <label class="label">Что общего у двух элементов слева (на синем поле)? Какое общее качество их
+              объединяет?</label>
+            <div class="control">
+              <input live-debounce="{{$.FormFieldDebounce}}" live-value-triadid={{$i}} name="leftPole"
+                class="input is-link" type="text">
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tile is-parent is-6">
+        <div class="tile is-child">
+          <div class="field">
+            <label class="label">Чем третий элемент (на красном поле) отличается от двух других? Какое качество его
+              выделяет?</label>
+            <div class="control">
+              <input live-debounce="{{$.FormFieldDebounce}}" live-value-triadid={{$i}} name="rightPole"
+                class="input is-danger" type="text">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {{ end }}
+
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+          <button {{ if ne $triad.Step "ready" }}disabled{{end}} type="submit" type="button" live-value-triadid={{$i}}
+            class="button is-success is-large">
+            Continue
+          </button>
+        </div>
       </div>
     </div>
   </form>
   {{ end }}
-
+  {{ end }}
 
   <p class="block is-size-5">When you are happy with added terms please continue to the next step.</p>
   <div class="level">

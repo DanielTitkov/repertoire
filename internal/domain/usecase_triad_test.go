@@ -32,6 +32,93 @@ func TestMoveFromLeft(t *testing.T) {
 	}
 }
 
+func TestTriadStepInit(t *testing.T) {
+	exp := TriadStepInit
+	var triad = Triad{
+		LeftTerms: []*Term{
+			&Term{Title: "first"},
+			&Term{Title: "second"},
+			&Term{Title: "third"},
+		},
+		RightTerms: []*Term{},
+	}
+
+	triad.UpdateStep()
+	if triad.Step != exp {
+		t.Errorf("expected '%s' but got '%s' step value", exp, triad.Step)
+	}
+}
+
+func TestTriadStepChosen(t *testing.T) {
+	exp := TriadStepChosen
+	var triad = Triad{
+		LeftTerms: []*Term{
+			&Term{Title: "first"},
+			&Term{Title: "second"},
+		},
+		RightTerms: []*Term{
+			&Term{Title: "third"},
+		},
+	}
+
+	triad.UpdateStep()
+	if triad.Step != exp {
+		t.Errorf("expected '%s' but got '%s' step value", exp, triad.Step)
+	}
+}
+
+func TestTriadStepReady(t *testing.T) {
+	exp := TriadStepReady
+	var triad = Triad{
+		LeftTerms: []*Term{
+			&Term{Title: "first"},
+			&Term{Title: "second"},
+		},
+		RightTerms: []*Term{
+			&Term{Title: "third"},
+		},
+		LeftPole:  "foo",
+		RightPole: "bar",
+	}
+
+	triad.UpdateStep()
+	if triad.Step != exp {
+		t.Errorf("expected '%s' but got '%s' step value", exp, triad.Step)
+	}
+}
+
+func TestTriadStepLeftDone(t *testing.T) {
+	exp := TriadStepLeftDone
+	var triad = Triad{
+		LeftTerms: []*Term{
+			&Term{Title: "first"},
+			&Term{Title: "second"},
+		},
+		RightTerms: []*Term{
+			&Term{Title: "third"},
+		},
+		LeftPole: "foo",
+	}
+
+	triad.UpdateStep()
+	if triad.Step != exp {
+		t.Errorf("expected '%s' but got '%s' step value", exp, triad.Step)
+	}
+}
+
+func TestTriadStepRaw(t *testing.T) {
+	exp := TriadStepRaw
+	var triad = Triad{
+		LeftTerms:  []*Term{},
+		RightTerms: []*Term{},
+	}
+
+	triad.UpdateStep()
+	if triad.Step != exp {
+		t.Errorf("expected '%s' but got '%s' step value", exp, triad.Step)
+	}
+}
+
 func TestMoveFromRight(t *testing.T) {
 	var triad = Triad{
 		LeftTerms: []*Term{

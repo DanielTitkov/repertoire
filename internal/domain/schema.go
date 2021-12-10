@@ -21,6 +21,7 @@ type (
 		RightTerms []*Term
 		LeftPole   string
 		RightPole  string
+		Step       string
 	}
 	Construct struct {
 		Title string
