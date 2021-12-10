@@ -27,8 +27,9 @@ type (
 		Title string
 	}
 	GridConfig struct {
-		TriadMethod string
-		MinTerms    int
-		MaxTerms    int
+		TriadMethod   string
+		MinTerms      int
+		MaxTerms      int
+		MinConstructs int
 	}
 )

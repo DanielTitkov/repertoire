@@ -2,6 +2,10 @@
 <div class="box">
   <h3 class="title">Triads</h3>
   <h5 class="subtitle">Here we will elicit constructs using triad method</h5>
+  <div class="block">
+    <progress class="progress {{if lt .CurrentTriadID .Grid.Config.MinConstructs }}is-danger{{else}}is-success{{end}}"
+      value="{{ .CurrentTriadID }}" max="{{ len .Grid.Triads }}">90%</progress>
+  </div>
 
   {{ range $i, $triad := .Grid.Triads }}
   {{ if eq $.CurrentTriadID $i }}
@@ -97,7 +101,7 @@
         <div class="level-item">
           <button {{ if ne $triad.Step "ready" }}disabled{{end}} type="submit" type="button" live-value-triadid={{$i}}
             class="button is-success is-large">
-            Continue
+            Следующая триада
           </button>
         </div>
       </div>

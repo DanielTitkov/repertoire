@@ -60,9 +60,10 @@ func AssignGridModel(s *live.Socket) *GridModel {
 		return &GridModel{
 			Grid: domain.NewGrid(
 				domain.GridConfig{
-					MinTerms:    5,
-					MaxTerms:    12,
-					TriadMethod: domain.TriadMethodChoice,
+					MinTerms:      4,
+					MaxTerms:      12,
+					TriadMethod:   domain.TriadMethodChoice,
+					MinConstructs: 10,
 				},
 			),
 			Session:           fmt.Sprint(s.Session),
@@ -174,7 +175,15 @@ func (h *Handler) Grid() *live.Handler {
 		m := AssignGridModel(s)
 		m.clearErrors()
 
-		fmt.Println(eventUpdateTriad, p)
+		fmt.Println(eventNextTriad, p)
+
+		triadID := p.Int(paramTriadID)
+		if !(triadID < len(m.Grid.Triads)) {
+			log.Println("max triads", triadID, len(m.Grid.Triads))
+			return m, nil
+		}
+
+		m.CurrentTriadID += 1
 
 		return m, nil
 	})
