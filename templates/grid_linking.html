@@ -1,0 +1,49 @@
+{{define "grid-linking"}}
+<div class="box">
+  <h3 class="title">Linking</h3>
+  <h5 class="subtitle">Bind terms and constructs</h5>
+
+
+  <div class="block">
+    {{ range $j, $term := $.Grid.Terms }}
+    <h3 class="title is-3">{{ $term.Title }}</h3>
+    {{ range $i, $construct := $.Grid.Constructs }}
+    <div class="level">
+      <p>{{ $construct.LeftPole }}</p>
+      <p>{{ $construct.RightPole }}</p>
+    </div>
+    {{ end }}
+    {{ end }}
+  </div>
+
+  <div>
+    <table class="table">
+      <tr>
+        <th></th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $term.Title }}</td>
+        {{ end }}
+        <th></th>
+      </tr>
+      {{ range $i, $construct := .Grid.Constructs }}
+      <tr>
+        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $.Grid.Matrix.At $i $j }}</td>
+        {{ end }}
+        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
+      </tr>
+      {{ end }}
+      <tr>
+        <th></th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $term.Title }}</td>
+        {{ end }}
+        <th></th>
+      </tr>
+    </table>
+  </div>
+
+
+</div>
+{{end}}

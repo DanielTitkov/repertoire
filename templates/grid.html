@@ -21,6 +21,10 @@
   {{ template "grid-triads" . }}
   {{end}}
 
+  {{ if eq .Grid.Step "linking" }}
+  {{ template "grid-linking" . }}
+  {{end}}
+
 </main>
 
 <script>

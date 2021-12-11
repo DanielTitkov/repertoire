@@ -6,6 +6,7 @@ const (
 
 	GridStepTerms       = "terms"
 	GridStepElicitation = "elicit"
+	GridStepLinking     = "linking"
 
 	TriadStepRaw      = "raw"      // empty object
 	TriadStepInit     = "init"     // with terms on one side

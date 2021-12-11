@@ -16,12 +16,13 @@ import (
 
 const (
 	// events
-	eventAddTerm        = "addTerm"
-	eventRemoveTerm     = "removeTerm"
-	eventGenerateTriads = "generateTriads"
-	eventMoveTerm       = "moveTerm"
-	eventUpdateTriad    = "updateTriad"
-	eventNextTriad      = "nextTriad"
+	eventAddTerm            = "addTerm"
+	eventRemoveTerm         = "removeTerm"
+	eventGenerateTriads     = "generateTriads"
+	eventMoveTerm           = "moveTerm"
+	eventUpdateTriad        = "updateTriad"
+	eventNextTriad          = "nextTriad"
+	eventGenerateConstructs = "generateConstructs"
 	// params
 	paramEmail        = "email"
 	paramAge          = "age"
@@ -63,7 +64,7 @@ func AssignGridModel(s *live.Socket) *GridModel {
 					MinTerms:      4,
 					MaxTerms:      12,
 					TriadMethod:   domain.TriadMethodChoice,
-					MinConstructs: 10,
+					MinConstructs: 7,
 				},
 			),
 			Session:           fmt.Sprint(s.Session),
@@ -81,6 +82,7 @@ func (h *Handler) Grid() *live.Handler {
 		h.t+"grid.html",
 		h.t+"grid_terms.html",
 		h.t+"grid_triads.html",
+		h.t+"grid_linking.html",
 		h.t+"alerts.html",
 	))
 
@@ -125,8 +127,7 @@ func (h *Handler) Grid() *live.Handler {
 			fmt.Println(eventGenerateTriads, err)
 		}
 
-		m.Grid.Step = domain.GridStepElicitation // TODO: maybe move inside method
-		m.CurrentTriadID = 0                     // set first triad
+		m.CurrentTriadID = 0 // set first triad
 
 		// TODO handle if for some reason there is no triads
 		return m, nil
@@ -161,8 +162,6 @@ func (h *Handler) Grid() *live.Handler {
 		m := AssignGridModel(s)
 		m.clearErrors()
 
-		fmt.Println(eventUpdateTriad, p)
-
 		m.Grid.GetTriadByIndex(m.CurrentTriadID).SetPoles(
 			p.String(paramLeftPole),
 			p.String(paramRightPole),
@@ -175,15 +174,24 @@ func (h *Handler) Grid() *live.Handler {
 		m := AssignGridModel(s)
 		m.clearErrors()
 
-		fmt.Println(eventNextTriad, p)
-
 		triadID := p.Int(paramTriadID)
 		if !(triadID < len(m.Grid.Triads)) {
-			log.Println("max triads", triadID, len(m.Grid.Triads))
 			return m, nil
 		}
 
 		m.CurrentTriadID += 1
+
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventGenerateConstructs, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		m.clearErrors()
+
+		err := m.Grid.GenerateConstructs()
+		if err != nil {
+			return m, err
+		}
 
 		return m, nil
 	})

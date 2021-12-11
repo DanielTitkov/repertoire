@@ -6,16 +6,51 @@ import (
 	"math/rand"
 	"time"
 
+	"gonum.org/v1/gonum/mat"
+
 	"github.com/DanielTitkov/repertoire/internal/util"
 )
 
 func NewGrid(
 	cfg GridConfig,
 ) *Grid {
-	return &Grid{
+	grid := &Grid{
 		Config: cfg,
-		Step:   GridStepTerms,
+		Step:   GridStepLinking, // FIXME
+		Constructs: []*Construct{
+			{
+				LeftPole:  "good",
+				RightPole: "bad",
+			},
+			{
+				LeftPole:  "sad",
+				RightPole: "funny",
+			},
+			{
+				LeftPole:  "sweet",
+				RightPole: "sour",
+			},
+			{
+				LeftPole:  "loved",
+				RightPole: "hated",
+			},
+			{
+				LeftPole:  "simple",
+				RightPole: "complex",
+			},
+		},
+		Terms: []Term{
+			{Title: "Dad"},
+			{Title: "Goose"},
+			{Title: "Mom"},
+			{Title: "Cat"},
+			{Title: "Psychologist"},
+			{Title: "Uncle Bob"},
+		},
 	}
+	fmt.Println(grid.InitMatrix()) // FIXME
+
+	return grid
 }
 
 func (g *Grid) RemoveTermByIndex(index int) {
@@ -83,6 +118,48 @@ func (g *Grid) GenerateTriads() error {
 	}
 
 	g.Triads = triads
+	if len(triads) < g.Config.MinConstructs {
+		g.Config.MinConstructs = len(triads)
+	}
+
+	g.Step = GridStepElicitation
+
+	return nil
+}
+
+func (g *Grid) GenerateConstructs() error {
+	var constructs []*Construct
+	for _, triad := range g.Triads {
+		if triad.Step != TriadStepReady {
+			continue
+		}
+		constructs = append(constructs, &Construct{
+			LeftPole:  triad.LeftPole,
+			RightPole: triad.RightPole,
+		})
+	}
+
+	g.Constructs = constructs
+	err := g.InitMatrix()
+	if err != nil {
+		return err
+	}
+
+	g.Step = GridStepLinking
+
+	return nil
+}
+
+func (g *Grid) InitMatrix() error {
+	if len(g.Terms) == 0 {
+		return errors.New("grid must have terms")
+	}
+
+	if len(g.Constructs) == 0 {
+		return errors.New("grid must have constructs")
+	}
+
+	g.Matrix = mat.NewDense(len(g.Constructs), len(g.Terms), nil)
 
 	return nil
 }

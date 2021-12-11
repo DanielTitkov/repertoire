@@ -1,5 +1,7 @@
 package domain
 
+import "gonum.org/v1/gonum/mat"
+
 type (
 	User struct {
 		Email string
@@ -9,9 +11,10 @@ type (
 	Grid struct {
 		Config     GridConfig
 		Terms      []Term // TODO: maybe use pointer
-		Constructs []Construct
+		Constructs []*Construct
 		Triads     []*Triad
 		Step       string
+		Matrix     *mat.Dense
 	}
 	Term struct {
 		Title string
@@ -24,7 +27,9 @@ type (
 		Step       string
 	}
 	Construct struct {
-		Title string
+		Title     string
+		LeftPole  string
+		RightPole string
 	}
 	GridConfig struct {
 		TriadMethod   string

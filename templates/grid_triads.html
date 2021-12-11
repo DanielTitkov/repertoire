@@ -1,11 +1,46 @@
 {{define "grid-triads"}}
 <div class="box">
-  <h3 class="title">Triads</h3>
-  <h5 class="subtitle">Here we will elicit constructs using triad method</h5>
+  <div class="tile is-ancestor">
+    <div class="tile is-parent is-8">
+      <div class="tile is-child">
+        <h3 class="title">Triads</h3>
+        <h5 class="subtitle">Here we will elicit constructs using triad method</h5>
+      </div>
+    </div>
+    <div class="tile is-parent is-4">
+      <div class="tile is-child">
+        <div class="level">
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Готово</p>
+              <p class="title">{{ .CurrentTriadID }}</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Минимум</p>
+              <p class="title">{{ .Grid.Config.MinConstructs }}</p>
+            </div>
+          </div>
+          <div class="level-item has-text-centered">
+            <div>
+              <p class="heading">Максимум</p>
+              <p class="title">{{ len .Grid.Triads }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="block">
+    <p class="is-size-4">Из элементов слева выберите один который отличается от двух других</p>
+  </div>
   <div class="block">
     <progress class="progress {{if lt .CurrentTriadID .Grid.Config.MinConstructs }}is-danger{{else}}is-success{{end}}"
       value="{{ .CurrentTriadID }}" max="{{ len .Grid.Triads }}">90%</progress>
   </div>
+
 
   {{ range $i, $triad := .Grid.Triads }}
   {{ if eq $.CurrentTriadID $i }}
@@ -71,8 +106,8 @@
             <label class="label">Что общего у двух элементов слева (на синем поле)? Какое общее качество их
               объединяет?</label>
             <div class="control">
-              <input live-debounce="{{$.FormFieldDebounce}}" live-value-triadid={{$i}} name="leftPole"
-                class="input is-link" type="text">
+              <input autocomplete="off" live-debounce="{{$.FormFieldDebounce}}" live-value-triadid={{$i}}
+                name="leftPole" class="input is-link" type="text">
             </div>
           </div>
         </div>
@@ -83,8 +118,8 @@
             <label class="label">Чем третий элемент (на красном поле) отличается от двух других? Какое качество его
               выделяет?</label>
             <div class="control">
-              <input live-debounce="{{$.FormFieldDebounce}}" live-value-triadid={{$i}} name="rightPole"
-                class="input is-danger" type="text">
+              <input autocomplete="off" live-debounce="{{$.FormFieldDebounce}}" live-value-triadid={{$i}}
+                name="rightPole" class="input is-danger" type="text">
             </div>
           </div>
         </div>
@@ -100,7 +135,7 @@
       <div class="level-right">
         <div class="level-item">
           <button {{ if ne $triad.Step "ready" }}disabled{{end}} type="submit" type="button" live-value-triadid={{$i}}
-            class="button is-success is-large">
+            class="button is-link is-large">
             Следующая триада
           </button>
         </div>
@@ -110,12 +145,11 @@
   {{ end }}
   {{ end }}
 
-  <p class="block is-size-5">When you are happy with added terms please continue to the next step.</p>
   <div class="level">
     <div class="level-item has-text-centered">
       <div class="block">
-        <button class="button is-large is-success" live-click="generateTriads" {{ if (lt (len .Grid.Terms)
-          .Grid.Config.MinTerms) }}disabled{{ end }}>Continue</button>
+        <button class="button is-large is-success" live-click="generateConstructs" {{if lt .CurrentTriadID
+          .Grid.Config.MinConstructs }}disabled{{ end }}>Continue</button>
         {{ if (lt (len .Grid.Terms) .Grid.Config.MinTerms) }}
         <p class="help is-size-6 is-link">Min number of terms is {{ .Grid.Config.MinTerms }}</p>
         {{ end }}
