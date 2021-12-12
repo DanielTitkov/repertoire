@@ -164,7 +164,12 @@ func (g *Grid) InitMatrix() error {
 		return errors.New("grid must have constructs")
 	}
 
-	g.Matrix = mat.NewDense(len(g.Constructs), len(g.Terms), nil)
+	var values []float64
+	for i := 0; i < len(g.Constructs)*len(g.Terms); i++ {
+		values = append(values, -1)
+	}
+
+	g.Matrix = mat.NewDense(len(g.Constructs), len(g.Terms), values)
 
 	return nil
 }

@@ -207,12 +207,11 @@ func (h *Handler) Grid() *live.Handler {
 		m := AssignGridModel(s)
 		m.clearErrors()
 
-		constructID := p.Int(paramConstructID)
-		termID := p.Int(paramTermID)
-		value := p.Int(paramLinkingValue)
-
-		m.Grid.Matrix.Set(constructID, termID, float64(value))
-		// TODO: probaby move to method
+		m.Grid.Matrix.Set(
+			p.Int(paramConstructID),
+			p.Int(paramTermID),
+			float64(p.Int(paramLinkingValue)),
+		) // TODO: probaby move to method
 
 		return m, nil
 	})
