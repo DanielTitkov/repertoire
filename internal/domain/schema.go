@@ -32,9 +32,10 @@ type (
 		RightPole string
 	}
 	GridConfig struct {
-		TriadMethod   string
-		MinTerms      int
-		MaxTerms      int
-		MinConstructs int
+		TriadMethod    string
+		MinTerms       int
+		MaxTerms       int
+		MinConstructs  int
+		ConstructSteps int
 	}
 )

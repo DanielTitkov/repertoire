@@ -48,7 +48,12 @@ func NewGrid(
 			{Title: "Uncle Bob"},
 		},
 	}
-	fmt.Println(grid.InitMatrix()) // FIXME
+	fmt.Println("init matrix", grid.InitMatrix()) // FIXME
+
+	err := grid.Validate()
+	if err != nil { // FIXME
+		panic(err)
+	}
 
 	return grid
 }
@@ -167,4 +172,12 @@ func (g *Grid) InitMatrix() error {
 func (g *Grid) GetTriadByIndex(idx int) *Triad {
 	// TODO add error on bad index
 	return g.Triads[idx]
+}
+
+func (g *Grid) Validate() error {
+	if g.Config.ConstructSteps < 2 {
+		return errors.New("construct steps cannot be less than 2")
+	}
+
+	return nil
 }

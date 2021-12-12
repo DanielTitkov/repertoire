@@ -23,11 +23,14 @@ const (
 	eventUpdateTriad        = "updateTriad"
 	eventNextTriad          = "nextTriad"
 	eventGenerateConstructs = "generateConstructs"
+	eventUpdateLinking      = "updateLinking"
 	// params
 	paramEmail        = "email"
 	paramAge          = "age"
 	paramTermID       = "termid"
 	paramTriadID      = "triadid"
+	paramConstructID  = "constructid"
+	paramLinkingValue = "linkingvalue"
 	paramMoveTermFrom = "from"
 	paramLeftPole     = "leftPole"
 	paramRightPole    = "rightPole"
@@ -39,6 +42,9 @@ const (
 var funcMap = template.FuncMap{
 	"N":     iter.N,
 	"Title": strings.Title,
+	"sub": func(x, y int) int {
+		return x - y
+	},
 }
 
 type (
@@ -61,10 +67,11 @@ func AssignGridModel(s *live.Socket) *GridModel {
 		return &GridModel{
 			Grid: domain.NewGrid(
 				domain.GridConfig{
-					MinTerms:      4,
-					MaxTerms:      12,
-					TriadMethod:   domain.TriadMethodChoice,
-					MinConstructs: 7,
+					MinTerms:       4,
+					MaxTerms:       12,
+					TriadMethod:    domain.TriadMethodChoice,
+					MinConstructs:  7,
+					ConstructSteps: 5,
 				},
 			),
 			Session:           fmt.Sprint(s.Session),
@@ -192,6 +199,20 @@ func (h *Handler) Grid() *live.Handler {
 		if err != nil {
 			return m, err
 		}
+
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventUpdateLinking, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		m.clearErrors()
+
+		constructID := p.Int(paramConstructID)
+		termID := p.Int(paramTermID)
+		value := p.Int(paramLinkingValue)
+
+		m.Grid.Matrix.Set(constructID, termID, float64(value))
+		// TODO: probaby move to method
 
 		return m, nil
 	})

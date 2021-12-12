@@ -1,20 +1,81 @@
 {{define "grid-linking"}}
+
+<style>
+  #radios label {
+    cursor: pointer;
+    position: relative;
+  }
+
+  #radios label+label {
+    margin-left: 15px;
+  }
+
+  input[type="radio"] {
+    opacity: 0;
+    /* hidden but still tabable */
+    position: absolute;
+  }
+
+  input[type="radio"]+span {
+    color: #000;
+    border-radius: 50%;
+    padding: 12px 20px 12px 20px;
+    /* transition: all 0.1s;
+    -webkit-transition: all 0.1s; */
+  }
+
+  input[type="radio"]:checked+span {
+    color: #fff;
+    background-color: #3e56c4;
+  }
+
+  input[type="radio"]:focus+span {
+    color: #fff;
+  }
+</style>
+
 <div class="box">
   <h3 class="title">Linking</h3>
   <h5 class="subtitle">Bind terms and constructs</h5>
 
 
-  <div class="block">
+  <form class="block">
     {{ range $j, $term := $.Grid.Terms }}
-    <h3 class="title is-3">{{ $term.Title }}</h3>
-    {{ range $i, $construct := $.Grid.Constructs }}
-    <div class="level">
-      <p>{{ $construct.LeftPole }}</p>
-      <p>{{ $construct.RightPole }}</p>
-    </div>
+    <section class="section">
+      <h3 class="title is-2">{{ $term.Title }}</h3>
+      {{ range $i, $construct := $.Grid.Constructs }}
+      <div class="block">
+        <div class="columns">
+          <div class="column is-one-quarter">
+            <div class="is-flex is-justify-content-left is-align-content-center">
+              <p class="is-size-4"><b>{{ $construct.LeftPole }}</b></p>
+            </div>
+          </div>
+          <div class="column">
+            <div id="radios" class="is-size-4 is-flex is-justify-content-center is-align-content-center">
+              {{ range $k, $_ := N $.Grid.Config.ConstructSteps }}
+              <label>
+                <input live-value-linkingvalue="{{$k}}" live-click="updateLinking" live-value-termid={{$j}}
+                  live-value-constructid={{$i}} type="radio" name="term-{{$j}}-construct-{{$i}}">
+                <span>{{ $k }}</span>
+              </label>
+              {{ end }}
+            </div>
+          </div>
+          <div class="column is-one-quarter">
+            <div class="is-flex is-justify-content-right is-align-content-center">
+              <p class="is-size-4"><b>{{ $construct.RightPole }}</b></p>
+            </div>
+          </div>
+        </div>
+        {{ if lt $i (sub (len $.Grid.Constructs) 1) }}
+        <hr>
+        {{ end }}
+      </div>
+      {{ end }}
+    </section>
     {{ end }}
-    {{ end }}
-  </div>
+  </form>
 
   <div>
     <table class="table">
