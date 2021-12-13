@@ -25,6 +25,10 @@
   {{ template "grid-linking" . }}
   {{end}}
 
+  {{ if eq .Grid.Step "result" }}
+  {{ template "grid-result" . }}
+  {{end}}
+
 </main>
 
 <script>

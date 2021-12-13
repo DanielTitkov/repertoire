@@ -16,7 +16,8 @@ func NewGrid(
 ) *Grid {
 	grid := &Grid{
 		Config: cfg,
-		Step:   GridStepLinking, // FIXME
+		// Step:   GridStepTerms,
+		Step: GridStepLinking, // FIXME
 		Constructs: []*Construct{
 			{
 				LeftPole:  "good",
@@ -184,5 +185,29 @@ func (g *Grid) Validate() error {
 		return errors.New("construct steps cannot be less than 2")
 	}
 
+	return nil
+}
+
+func (g *Grid) IsMatrixComplete() bool {
+	x, y := g.Matrix.Dims()
+	for i := 0; i < x; i++ {
+		for j := 0; j < y; j++ {
+			if g.Matrix.At(i, j) == -1 {
+				return false
+			}
+		}
+	}
+
+	return true
+}
+
+func (g *Grid) CalculateResult() error {
+	if !g.IsMatrixComplete() {
+		return errors.New("matrix must be complete in order to proceed to results")
+	}
+
+	// analysis
+
+	g.Step = GridStepResult
 	return nil
 }

@@ -1,0 +1,33 @@
+{{define "grid-result"}}
+<div class="box">
+  <h3 class="title">Grid report</h3>
+  <h5 class="subtitle">Here you can see grid analysis results</h5>
+  <div class="container">
+    <table class="table">
+      <tr>
+        <th></th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $term.Title }}</td>
+        {{ end }}
+        <th></th>
+      </tr>
+      {{ range $i, $construct := .Grid.Constructs }}
+      <tr>
+        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $.Grid.Matrix.At $i $j }}</td>
+        {{ end }}
+        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
+      </tr>
+      {{ end }}
+      <tr>
+        <th></th>
+        {{ range $j, $term := $.Grid.Terms }}
+        <td>{{ $term.Title }}</td>
+        {{ end }}
+        <th></th>
+      </tr>
+    </table>
+  </div>
+</div>
+{{end}}

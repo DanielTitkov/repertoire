@@ -24,6 +24,7 @@ const (
 	eventNextTriad          = "nextTriad"
 	eventGenerateConstructs = "generateConstructs"
 	eventUpdateLinking      = "updateLinking"
+	eventGridResult         = "gridResult"
 	// params
 	paramEmail        = "email"
 	paramAge          = "age"
@@ -90,6 +91,7 @@ func (h *Handler) Grid() *live.Handler {
 		h.t+"grid_terms.html",
 		h.t+"grid_triads.html",
 		h.t+"grid_linking.html",
+		h.t+"grid_result.html",
 		h.t+"alerts.html",
 	))
 
@@ -212,6 +214,18 @@ func (h *Handler) Grid() *live.Handler {
 			p.Int(paramTermID),
 			float64(p.Int(paramLinkingValue)),
 		) // TODO: probaby move to method
+
+		return m, nil
+	})
+
+	lvh.HandleEvent(eventGridResult, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
+		m := AssignGridModel(s)
+		m.clearErrors()
+
+		err := m.Grid.CalculateResult()
+		if err != nil {
+			return m, err
+		}
 
 		return m, nil
 	})

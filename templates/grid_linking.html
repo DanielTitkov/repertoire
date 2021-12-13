@@ -35,7 +35,6 @@
   <h3 class="title">Linking</h3>
   <h5 class="subtitle">Bind terms and constructs</h5>
 
-
   <form class="block">
     {{ range $j, $term := $.Grid.Terms }}
     <section class="section">
@@ -74,34 +73,17 @@
     {{ end }}
   </form>
 
-  <div>
-    <table class="table">
-      <tr>
-        <th></th>
-        {{ range $j, $term := $.Grid.Terms }}
-        <td>{{ $term.Title }}</td>
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div class="block">
+        <button class="button is-large is-success" live-click="gridResult" {{if not .Grid.IsMatrixComplete }}disabled{{
+          end }}>Calculate results</button>
+        {{ if not .Grid.IsMatrixComplete }}
+        <p class="help is-size-6 is-link">Заполните все оценки</p>
         {{ end }}
-        <th></th>
-      </tr>
-      {{ range $i, $construct := .Grid.Constructs }}
-      <tr>
-        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
-        {{ range $j, $term := $.Grid.Terms }}
-        <td>{{ $.Grid.Matrix.At $i $j }}</td>
-        {{ end }}
-        <th>{{ $construct.LeftPole }}-{{ $construct.RightPole }}</th>
-      </tr>
-      {{ end }}
-      <tr>
-        <th></th>
-        {{ range $j, $term := $.Grid.Terms }}
-        <td>{{ $term.Title }}</td>
-        {{ end }}
-        <th></th>
-      </tr>
-    </table>
+      </div>
+    </div>
   </div>
-
 
 </div>
 {{end}}
