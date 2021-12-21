@@ -29,5 +29,78 @@
       </tr>
     </table>
   </div>
+  <div id="terms-corr-heatmap" class="block"></div>
+  <div id="constructs-corr-heatmap" class="block"></div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  var test = {{ $.Grid.Config }}
+
+  options = {
+    chart: {
+      height: 400,
+      type: 'heatmap',
+      inverse: true,
+    },
+    plotOptions: {
+      heatmap: {
+        radius: 20,
+      }
+    },
+    colors: ["#485fc7"],
+    series: [
+      {{ range $i, $term := $.Grid.Terms }}
+      {
+        name: "{{ $term.Title }}",
+        data: [
+          {{ range $j, $innerTerm := $.Grid.Terms }}
+          {
+            x: "{{ $innerTerm.Title }}",
+            y: {{ $.Grid.Analysis.TermsCorrMatrix.At $i $j }},
+          },
+          {{ end }}
+        ],
+      },
+      {{end}}
+    ]
+  }
+
+  var chart = new ApexCharts(document.querySelector("#terms-corr-heatmap"), options);
+  chart.render();
+</script><script>
+  var test = {{ $.Grid.Config }}
+
+  options = {
+    chart: {
+      height: 400,
+      type: 'heatmap',
+      inverse: true,
+    },
+    plotOptions: {
+      heatmap: {
+        radius: 20,
+      }
+    },
+    colors: ["#485fc7", "#f14668"],
+    series: [
+      {{ range $i, $construct := $.Grid.Constructs }}
+      {
+        name: "{{ $construct.Title }}",
+        data: [
+          {{ range $j, $innerConstruct := $.Grid.Constructs }}
+          {
+            x: "{{ $innerConstruct.Title }}",
+            y: {{ $.Grid.Analysis.ConstructsCorrMatrix.At $i $j }},
+          },
+          {{ end }}
+        ],
+      },
+      {{end}}
+    ]
+  }
+
+  var chart = new ApexCharts(document.querySelector("#constructs-corr-heatmap"), options);
+  chart.render();
+</script>
 {{end}}

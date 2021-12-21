@@ -15,6 +15,7 @@ type (
 		Triads     []*Triad
 		Step       string
 		Matrix     *mat.Dense
+		Analysis   *GridAnalysis
 	}
 	Term struct {
 		Title string
@@ -27,7 +28,6 @@ type (
 		Step       string
 	}
 	Construct struct {
-		Title     string
 		LeftPole  string
 		RightPole string
 	}
@@ -37,5 +37,9 @@ type (
 		MaxTerms       int
 		MinConstructs  int
 		ConstructSteps int
+	}
+	GridAnalysis struct {
+		TermsCorrMatrix      mat.Matrix
+		ConstructsCorrMatrix mat.Matrix
 	}
 )

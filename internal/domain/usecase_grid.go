@@ -7,8 +7,14 @@ import (
 	"time"
 
 	"gonum.org/v1/gonum/mat"
+	"gonum.org/v1/gonum/stat"
 
 	"github.com/DanielTitkov/repertoire/internal/util"
+)
+
+const (
+	corrDirectionTerms      = "terms"
+	corrDirectionConstructs = "constructs"
 )
 
 func NewGrid(
@@ -50,6 +56,12 @@ func NewGrid(
 		},
 	}
 	fmt.Println("init matrix", grid.InitMatrix()) // FIXME
+	var data []float64
+	for i := 0; i < len(grid.Constructs)*len(grid.Terms); i++ {
+		data = append(data, float64(rand.Intn(grid.Config.ConstructSteps)))
+	}
+	grid.Matrix = mat.NewDense(len(grid.Constructs), len(grid.Terms), data) // FIXME
+	fmt.Println("result", grid.CalculateResult())                           // FIXME
 
 	err := grid.Validate()
 	if err != nil { // FIXME
@@ -207,7 +219,37 @@ func (g *Grid) CalculateResult() error {
 	}
 
 	// analysis
+	termsCorrM, err := g.getCorrelationMatrix(corrDirectionTerms)
+	if err != nil {
+		return err
+	}
 
+	constructsCorrM, err := g.getCorrelationMatrix(corrDirectionConstructs)
+	if err != nil {
+		return err
+	}
+
+	g.Analysis = &GridAnalysis{
+		TermsCorrMatrix:      termsCorrM,
+		ConstructsCorrMatrix: constructsCorrM,
+	}
 	g.Step = GridStepResult
 	return nil
+}
+
+func (g *Grid) getCorrelationMatrix(direction string) (mat.Matrix, error) {
+	var m mat.SymDense
+	res := &m
+
+	if direction == corrDirectionTerms {
+		// without transpose will get terms correlations
+		stat.CorrelationMatrix(res, g.Matrix, nil)
+	} else if direction == corrDirectionConstructs {
+		// to get construct correlations need transpose
+		stat.CorrelationMatrix(res, g.Matrix.T(), nil)
+	} else {
+		return nil, fmt.Errorf("direction must be either %s or %s, got %s", corrDirectionTerms, corrDirectionConstructs, direction)
+	}
+
+	return res, nil
 }

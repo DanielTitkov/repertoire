@@ -46,6 +46,7 @@ var funcMap = template.FuncMap{
 	"sub": func(x, y int) int {
 		return x - y
 	},
+	"Reverse": domain.ReverseSliceTerms,
 }
 
 type (
@@ -226,6 +227,9 @@ func (h *Handler) Grid() *live.Handler {
 		if err != nil {
 			return m, err
 		}
+
+		// term correlation heatmap
+		// construct correlation heatmap
 
 		return m, nil
 	})

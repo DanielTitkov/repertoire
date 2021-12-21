@@ -30,7 +30,7 @@ func main() {
 	// favicon
 	http.HandleFunc("/favicon.ico", faviconHandler)
 	// serve
-	http.ListenAndServe(":8080", nil)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 func faviconHandler(w http.ResponseWriter, r *http.Request) {
