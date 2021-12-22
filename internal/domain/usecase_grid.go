@@ -57,9 +57,17 @@ func NewGrid(
 	}
 	fmt.Println("init matrix", grid.InitMatrix()) // FIXME
 	var data []float64
-	for i := 0; i < len(grid.Constructs)*len(grid.Terms); i++ {
-		data = append(data, float64(rand.Intn(grid.Config.ConstructSteps)))
+	data = []float64{
+		1, 1, 4, 1, 1, 3,
+		1, 1, 4, 1, 4, 2,
+		1, 1, 4, 2, 1, 1,
+		2, 2, 2, 1, 4, 4,
+		3, 4, 1, 1, 1, 3,
 	}
+
+	// for i := 0; i < len(grid.Constructs)*len(grid.Terms); i++ {
+	// 	data = append(data, float64(rand.Intn(grid.Config.ConstructSteps)))
+	// }
 	grid.Matrix = mat.NewDense(len(grid.Constructs), len(grid.Terms), data) // FIXME
 	fmt.Println("result", grid.CalculateResult())                           // FIXME
 
@@ -67,6 +75,8 @@ func NewGrid(
 	if err != nil { // FIXME
 		panic(err)
 	}
+
+	grid.Step = GridStepLinking
 
 	return grid
 }

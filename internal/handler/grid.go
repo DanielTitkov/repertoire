@@ -2,11 +2,14 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/DanielTitkov/repertoire/internal/charts"
 
 	"github.com/DanielTitkov/repertoire/internal/domain"
 	"github.com/bradfitz/iter"
@@ -52,10 +55,15 @@ var funcMap = template.FuncMap{
 type (
 	GridModel struct {
 		Grid              *domain.Grid
+		UpdateValue       int
 		Session           string
 		AddTermError      string
 		FormFieldDebounce int // ms
 		CurrentTriadID    int
+		Charts            struct {
+			TermsCorr      []charts.Heatmap
+			ConstructsCorr []charts.Heatmap
+		}
 	}
 )
 
@@ -229,8 +237,23 @@ func (h *Handler) Grid() *live.Handler {
 		}
 
 		// term correlation heatmap
+		m.Charts.TermsCorr = makeTermsHeatmapData(m.Grid)
+		fmt.Println(m.Charts.TermsCorr)
+
+		termsCorrJSON, err := json.Marshal(m.Charts.TermsCorr)
+		if err != nil {
+			return m, err
+		}
+
+		if err := s.Send("updateChart", string(termsCorrJSON)); err != nil {
+			return m, fmt.Errorf("failed braodcasting new message: %w", err)
+		}
+
 		// construct correlation heatmap
 
+		m.UpdateValue += 1
+
+		fmt.Println("end")
 		return m, nil
 	})
 
@@ -241,4 +264,26 @@ func (h *Handler) Grid() *live.Handler {
 	// })
 
 	return lvh
+}
+
+func makeTermsHeatmapData(g *domain.Grid) []charts.Heatmap {
+	var titles []string
+	for _, t := range g.Terms {
+		titles = append(titles, t.Title)
+	}
+
+	var data [][]float64
+	for i := range g.Terms {
+		var row []float64
+		for j := range g.Terms {
+			row = append(row, g.Analysis.TermsCorrMatrix.At(i, j))
+		}
+		data = append(data, row)
+	}
+
+	return charts.NewHeatmapData(
+		data,
+		titles,
+		titles,
+	)
 }

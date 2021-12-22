@@ -1,7 +1,7 @@
 {{ define "title" }} Grid {{ end }}
 {{ define "view" }}
 
-<main>
+<main live-hook="setupChartHook">
   <h1 class="title is-1">Grid page</h1>
   <div class="box">
     <h3 class="subtitle">Debug info</h3>
@@ -30,17 +30,4 @@
   {{end}}
 
 </main>
-
-<script>
-  window.Hooks = {
-    "addTermHook": {
-      mounted: function () {
-        this.el.addEventListener("submit", () => {
-          this.el.querySelector("input").value = "";
-        });
-      }
-    }
-  };
-</script>
-
 {{ end }}
