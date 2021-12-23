@@ -33,8 +33,21 @@
 
   <div class="container"> <button class="button is-success" live-click="gridResult">Построить графики</button></div>
 
-  <div id="terms-corr-heatmap" class="block"></div>
-  <div id="constructs-corr-heatmap" class="block"></div>
+  <div class="section">
+    <div class="columns">
+      <div class="column">
+        <h3 class="title is-3">Корреляции элементов</h3>
+        <div id="terms-corr-heatmap" class="block"></div>
+      </div>
+      <div class="column">
+        <h3 class="title is-3">Корреляции конструктов</h3>
+        <div id="constructs-corr-heatmap" class="block"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
 </div>
 
 <script live-hook="makeChartsHook" type="application/json" id="chartsData">
@@ -44,7 +57,8 @@
     "constructsCorrHeatmap": {{ .Charts.ConstructsCorr }},
     "config": {
       "displaylogo": false,
-      "displayModeBar": false
+      "displayModeBar": false,
+      "responsive": false
     }
   }
 </script>

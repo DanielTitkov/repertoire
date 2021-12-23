@@ -2,7 +2,7 @@ package charts
 
 const (
 	typeHeatmap = "heatmap"
-	colorScale  = "Viridis"
+	colorScale  = "Portland"
 )
 
 type Heatmap struct {
