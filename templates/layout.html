@@ -29,6 +29,12 @@
   </footer>
 </body>
 
+<script>
+  window.getChartsData = function () {
+    return JSON.parse(document.querySelector("#chartsData").innerHTML);
+  }
+</script>
+
 <script src="https://cdn.plot.ly/plotly-2.8.3.min.js"></script>
 <script>
   window.Hooks = {
@@ -41,36 +47,13 @@
         });
       }
     },
-    "setupChartHook": {
-      mounted: function () {
-        this.handleEvent("updateChart", (payload) => {
-          var data = JSON.parse(payload);
-          var config = {
-            displaylogo: false,
-            displayModeBar: false,
-          }
-
-          console.log("DATA", data);
-          Plotly.newPlot('myDiv', data, null, config);
-        });
-        console.log("HOOK M");
-      },
-    },
-    "updateChartHook": {
+    "makeChartsHook": {
       updated: function () {
-        this.handleEvent("updateChart", (payload) => {
-          var data = JSON.parse(payload);
-          var config = {
-            displaylogo: false,
-            displayModeBar: false,
-          }
-
-          console.log("DATA", data);
-          Plotly.newPlot('myDiv', data, null, config);
-        });
-        console.log("HOOK");
-      },
-    },
+        var chartsData = window.getChartsData()
+        Plotly.newPlot('terms-corr-heatmap', chartsData.termsCorrHeatmap, null, chartsData.config);
+        Plotly.newPlot('constructs-corr-heatmap', chartsData.constructsCorrHeatmap, null, chartsData.config);
+      }
+    }
   };
 </script>
 

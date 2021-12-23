@@ -3,11 +3,6 @@
   <h3 class="title">Grid report</h3>
   <h5 class="subtitle">Here you can see grid analysis results</h5>
 
-  <button class="button is-large is-success" live-click="gridResult" {{if not .Grid.IsMatrixComplete }}disabled{{ end
-    }}>Calculate results</button>
-
-  <p live-hook="updateChartHook">{{ . }}</p>
-
   <div class="container">
     <table class="table">
       <tr>
@@ -35,9 +30,23 @@
       </tr>
     </table>
   </div>
-  <div id="myDiv"></div>
+
+  <div class="container"> <button class="button is-success" live-click="gridResult">Построить графики</button></div>
+
   <div id="terms-corr-heatmap" class="block"></div>
   <div id="constructs-corr-heatmap" class="block"></div>
 </div>
+
+<script live-hook="makeChartsHook" type="application/json" id="chartsData">
+  {
+    "updateValue": {{ .UpdateValue }},
+    "termsCorrHeatmap": {{ .Charts.TermsCorr }},
+    "constructsCorrHeatmap": {{ .Charts.ConstructsCorr }},
+    "config": {
+      "displaylogo": false,
+      "displayModeBar": false
+    }
+  }
+</script>
 
 {{ end }}

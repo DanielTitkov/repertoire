@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -238,22 +237,10 @@ func (h *Handler) Grid() *live.Handler {
 
 		// term correlation heatmap
 		m.Charts.TermsCorr = makeTermsHeatmapData(m.Grid)
-		fmt.Println(m.Charts.TermsCorr)
-
-		termsCorrJSON, err := json.Marshal(m.Charts.TermsCorr)
-		if err != nil {
-			return m, err
-		}
-
-		if err := s.Send("updateChart", string(termsCorrJSON)); err != nil {
-			return m, fmt.Errorf("failed braodcasting new message: %w", err)
-		}
-
-		// construct correlation heatmap
+		m.Charts.ConstructsCorr = makeConstructsHeatmapData(m.Grid)
 
 		m.UpdateValue += 1
 
-		fmt.Println("end")
 		return m, nil
 	})
 
@@ -277,6 +264,28 @@ func makeTermsHeatmapData(g *domain.Grid) []charts.Heatmap {
 		var row []float64
 		for j := range g.Terms {
 			row = append(row, g.Analysis.TermsCorrMatrix.At(i, j))
+		}
+		data = append(data, row)
+	}
+
+	return charts.NewHeatmapData(
+		data,
+		titles,
+		titles,
+	)
+}
+
+func makeConstructsHeatmapData(g *domain.Grid) []charts.Heatmap {
+	var titles []string
+	for _, c := range g.Constructs {
+		titles = append(titles, c.Title())
+	}
+
+	var data [][]float64
+	for i := range g.Constructs {
+		var row []float64
+		for j := range g.Constructs {
+			row = append(row, g.Analysis.ConstructsCorrMatrix.At(i, j))
 		}
 		data = append(data, row)
 	}
