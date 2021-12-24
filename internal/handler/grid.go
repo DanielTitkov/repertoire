@@ -34,6 +34,7 @@ const (
 	paramAge          = "age"
 	paramTermID       = "termid"
 	paramTriadID      = "triadid"
+	paramTermValue    = "term"
 	paramConstructID  = "constructid"
 	paramLinkingValue = "linkingvalue"
 	paramMoveTermFrom = "from"
@@ -125,8 +126,7 @@ func (h *Handler) Grid() *live.Handler {
 	lvh.HandleEvent(eventAddTerm, func(ctx context.Context, s *live.Socket, p live.Params) (interface{}, error) {
 		m := AssignGridModel(s)
 		m.clearErrors()
-		termValue := p.String("term")
-		err := m.Grid.AddTerm(domain.Term{Title: termValue})
+		err := m.Grid.AddTerm(domain.Term{Title: p.String(paramTermValue)})
 		if err != nil {
 			m.AddTermError = err.Error()
 		}
