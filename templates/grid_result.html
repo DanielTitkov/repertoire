@@ -3,7 +3,9 @@
   <h3 class="title">Grid report</h3>
   <h5 class="subtitle">Here you can see grid analysis results</h5>
 
-  <div class="container">
+  <div class="block">
+    <h4 class="title is-4">Репертуарная решётка</h4>
+    <h6 class="subtitle is-6">Данные репертуарной решётки для дальнейшего анализа</h6>
     <table class="table">
       <tr>
         <th></th>
@@ -31,16 +33,46 @@
     </table>
   </div>
 
-  <div class="container"> <button class="button is-success" live-click="gridResult">Построить графики</button></div>
+  <div class="block">
+    <h4 class="title is-4">Корреляции</h4>
+    <div class="tile is-ancestor">
+      <div class="tile is-parent">
+        <div class="tile is-child notification">
+          <h5 class="subtitle is-5">Элементы</h5>
+          {{ range $corr := .TermsCorrs }}
+          <p>
+            <span><b>{{ $corr.Left }} / {{ $corr.Right }}</b> {{ $corr.Value }}</span>
+          </p>
+          {{ end }}
+        </div>
+      </div>
+      <div class="tile is-parent">
+        <div class="tile is-child notification">
+          <h5 class="subtitle is-5">Конструкты</h5>
+          {{ range $corr := .ConstructsCorrs }}
+          <p>
+            <span><b>{{ $corr.Left }} / {{ $corr.Right }}</b> {{ $corr.Value }}</span>
+          </p>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div class="block">
+        <button class="button is-success" live-click="gridResult">Построить графики</button>
+      </div>
+    </div>
+  </div>
 
   <div class="section">
     <div class="columns">
       <div class="column">
-        <h3 class="title is-3">Корреляции элементов</h3>
         <div id="terms-corr-heatmap" class="block"></div>
       </div>
       <div class="column">
-        <h3 class="title is-3">Корреляции конструктов</h3>
         <div id="constructs-corr-heatmap" class="block"></div>
       </div>
     </div>
@@ -53,12 +85,37 @@
 <script live-hook="makeChartsHook" type="application/json" id="chartsData">
   {
     "updateValue": {{ .UpdateValue }},
-    "termsCorrHeatmap": {{ .Charts.TermsCorr }},
-    "constructsCorrHeatmap": {{ .Charts.ConstructsCorr }},
+    "termsCorrHeatmap": {
+      "data": {{ .Charts.TermsCorr }},
+      "layout": {
+        "title": {
+          "text": "Корреляции элементов",
+          "font": {
+            "family": "Ubuntu, monospace",
+            "size": 28
+          },
+          "xref": "paper",
+          "x": 0.05
+        }
+      }
+    },
+    "constructsCorrHeatmap": {
+      "data": {{ .Charts.ConstructsCorr }},
+      "layout": {
+        "title": {
+          "text": "Корреляции конструктов",
+          "font": {
+            "family": "Ubuntu, monospace",
+            "size": 28
+          },
+          "xref": "paper",
+          "x": 0.05
+        }
+      }
+    },
     "config": {
-      "displaylogo": false,
       "displayModeBar": false,
-      "responsive": false
+      "responsive": true
     }
   }
 </script>

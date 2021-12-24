@@ -22,61 +22,61 @@ func NewGrid(
 ) *Grid {
 	grid := &Grid{
 		Config: cfg,
-		// Step:   GridStepTerms,
-		Step: GridStepLinking, // FIXME
-		Constructs: []*Construct{
-			{
-				LeftPole:  "good",
-				RightPole: "bad",
-			},
-			{
-				LeftPole:  "sad",
-				RightPole: "funny",
-			},
-			{
-				LeftPole:  "sweet",
-				RightPole: "sour",
-			},
-			{
-				LeftPole:  "loved",
-				RightPole: "hated",
-			},
-			{
-				LeftPole:  "simple",
-				RightPole: "complex",
-			},
-		},
-		Terms: []Term{
-			{Title: "Dad"},
-			{Title: "Goose"},
-			{Title: "Mom"},
-			{Title: "Cat"},
-			{Title: "Psychologist"},
-			{Title: "Uncle Bob"},
-		},
+		Step:   GridStepTerms,
+		// Step: GridStepLinking, // FIXME
+		// Constructs: []*Construct{
+		// 	{
+		// 		LeftPole:  "good",
+		// 		RightPole: "bad",
+		// 	},
+		// 	{
+		// 		LeftPole:  "sad",
+		// 		RightPole: "funny",
+		// 	},
+		// 	{
+		// 		LeftPole:  "sweet",
+		// 		RightPole: "sour",
+		// 	},
+		// 	{
+		// 		LeftPole:  "loved",
+		// 		RightPole: "hated",
+		// 	},
+		// 	{
+		// 		LeftPole:  "simple",
+		// 		RightPole: "complex",
+		// 	},
+		// },
+		// Terms: []Term{
+		// 	{Title: "Dad"},
+		// 	{Title: "Goose"},
+		// 	{Title: "Mom"},
+		// 	{Title: "Cat"},
+		// 	{Title: "Psychologist"},
+		// 	{Title: "Uncle Bob"},
+		// },
 	}
-	fmt.Println("init matrix", grid.InitMatrix()) // FIXME
-	var data []float64
-	data = []float64{
-		1, 1, 4, 1, 1, 3,
-		1, 1, 4, 1, 4, 2,
-		1, 1, 4, 2, 1, 1,
-		2, 2, 2, 1, 4, 4,
-		3, 4, 1, 1, 1, 3,
-	}
+	// fmt.Println("init matrix", grid.InitMatrix()) // FIXME
+	// var data []float64
+	// data = []float64{
+	// 	1, 1, 4, 1, 1, 3,
+	// 	1, 1, 4, 1, 4, 2,
+	// 	1, 1, 4, 2, 1, 1,
+	// 	2, 2, 2, 1, 4, 4,
+	// 	3, 4, 1, 1, 1, 3,
+	// }
 
 	// for i := 0; i < len(grid.Constructs)*len(grid.Terms); i++ {
 	// 	data = append(data, float64(rand.Intn(grid.Config.ConstructSteps)))
 	// }
-	grid.Matrix = mat.NewDense(len(grid.Constructs), len(grid.Terms), data) // FIXME
-	fmt.Println("result", grid.CalculateResult())                           // FIXME
+	// grid.Matrix = mat.NewDense(len(grid.Constructs), len(grid.Terms), data) // FIXME
+	// fmt.Println("result", grid.CalculateResult())                           // FIXME
 
 	err := grid.Validate()
 	if err != nil { // FIXME
 		panic(err)
 	}
 
-	grid.Step = GridStepLinking
+	// grid.Step = GridStepLinking
 
 	return grid
 }

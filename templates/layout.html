@@ -40,18 +40,16 @@
   window.Hooks = {
     "addTermHook": {
       mounted: function () {
-        console.log("outer");
         this.el.addEventListener("submit", () => {
-          this.el.querySelector("input").value = "foo";
-          console.log("inner (cleaned input)");
+          this.el.querySelector("input").value = "";
         });
       }
     },
     "makeChartsHook": {
       updated: function () {
         var chartsData = window.getChartsData()
-        Plotly.newPlot('terms-corr-heatmap', chartsData.termsCorrHeatmap, null, chartsData.config);
-        Plotly.newPlot('constructs-corr-heatmap', chartsData.constructsCorrHeatmap, null, chartsData.config);
+        Plotly.newPlot('terms-corr-heatmap', chartsData.termsCorrHeatmap.data, chartsData.termsCorrHeatmap.layout, chartsData.config);
+        Plotly.newPlot('constructs-corr-heatmap', chartsData.constructsCorrHeatmap.data, chartsData.constructsCorrHeatmap.layout, chartsData.config);
       }
     }
   };

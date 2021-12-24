@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"html/template"
 	"log"
+	"math"
 	"net/http"
+	"sort"
 	"strings"
 
 	"github.com/DanielTitkov/repertoire/internal/charts"
@@ -63,6 +65,13 @@ type (
 			TermsCorr      []charts.Heatmap
 			ConstructsCorr []charts.Heatmap
 		}
+		TermsCorrs      []Corr
+		ConstructsCorrs []Corr
+	}
+	Corr struct {
+		Left  string
+		Right string
+		Value float64
 	}
 )
 
@@ -76,11 +85,11 @@ func AssignGridModel(s *live.Socket) *GridModel {
 		return &GridModel{
 			Grid: domain.NewGrid(
 				domain.GridConfig{
-					MinTerms:       4,
+					MinTerms:       7,
 					MaxTerms:       12,
 					TriadMethod:    domain.TriadMethodChoice,
 					MinConstructs:  7,
-					ConstructSteps: 5,
+					ConstructSteps: 4,
 				},
 			),
 			Session:           fmt.Sprint(s.Session),
@@ -235,9 +244,13 @@ func (h *Handler) Grid() *live.Handler {
 			return m, err
 		}
 
-		// term correlation heatmap
+		// correlation heatmaps
 		m.Charts.TermsCorr = makeTermsHeatmapData(m.Grid)
 		m.Charts.ConstructsCorr = makeConstructsHeatmapData(m.Grid)
+
+		// correlations
+		m.ConstructsCorrs = makeConstructsCorrs(m.Grid)
+		m.TermsCorrs = makeTermsCorrs(m.Grid)
 
 		m.UpdateValue += 1
 
@@ -295,4 +308,48 @@ func makeConstructsHeatmapData(g *domain.Grid) []charts.Heatmap {
 		titles,
 		titles,
 	)
+}
+
+func makeConstructsCorrs(g *domain.Grid) []Corr {
+	var corrs []Corr
+
+	for i := 0; i < len(g.Constructs); i++ {
+		for j := 0; j < (i + 1); j++ {
+			if g.Constructs[i].Title() != g.Constructs[j].Title() {
+				corrs = append(corrs, Corr{
+					Left:  g.Constructs[i].Title(),
+					Right: g.Constructs[j].Title(),
+					Value: math.Round(g.Analysis.ConstructsCorrMatrix.At(i, j)*1000) / 1000,
+				})
+			}
+		}
+	}
+
+	sort.Slice(corrs, func(i, j int) bool {
+		return corrs[i].Value > corrs[j].Value
+	})
+
+	return corrs
+}
+
+func makeTermsCorrs(g *domain.Grid) []Corr {
+	var corrs []Corr
+
+	for i := 0; i < len(g.Terms); i++ {
+		for j := 0; j < (i + 1); j++ {
+			if g.Terms[i].Title != g.Terms[j].Title {
+				corrs = append(corrs, Corr{
+					Left:  g.Terms[i].Title,
+					Right: g.Terms[j].Title,
+					Value: math.Round(g.Analysis.TermsCorrMatrix.At(i, j)*1000) / 1000,
+				})
+			}
+		}
+	}
+
+	sort.Slice(corrs, func(i, j int) bool {
+		return corrs[i].Value > corrs[j].Value
+	})
+
+	return corrs
 }
