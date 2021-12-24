@@ -137,7 +137,10 @@ func (g *Grid) GenerateTriads() error {
 		switch g.Config.TriadMethod {
 		case TriadMethodForced:
 			// move random item from left to right
-			triad.MoveFromLeft(rand.Intn(3))
+			err := triad.MoveFromLeft(rand.Intn(3))
+			if err != nil {
+				return err
+			}
 		case TriadMethodChoice:
 		default:
 			return fmt.Errorf("unknown triad method: %s", g.Config.TriadMethod)

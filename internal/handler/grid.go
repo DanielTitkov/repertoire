@@ -30,8 +30,6 @@ const (
 	eventUpdateLinking      = "updateLinking"
 	eventGridResult         = "gridResult"
 	// params
-	paramEmail        = "email"
-	paramAge          = "age"
 	paramTermID       = "termid"
 	paramTriadID      = "triadid"
 	paramTermValue    = "term"

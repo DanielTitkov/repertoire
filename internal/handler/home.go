@@ -10,11 +10,6 @@ import (
 	"github.com/jfyne/live"
 )
 
-const (
-	// template vars
-	varSession = "session"
-)
-
 type (
 	HomeInstance struct {
 		Session string

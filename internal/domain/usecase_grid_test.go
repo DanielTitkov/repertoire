@@ -80,7 +80,9 @@ func TestCorrelationMatrices(t *testing.T) {
 	grid.Terms = terms
 	grid.Constructs = constructs
 	grid.Step = GridStepLinking // ?
-	grid.InitMatrix()
+	if err := grid.InitMatrix(); err != nil {
+		t.Errorf("failed to init matrix: %s", err)
+	}
 
 	expTermsDim := len(grid.Terms)
 	expConstructsDim := len(grid.Constructs)
