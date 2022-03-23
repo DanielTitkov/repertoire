@@ -84,10 +84,10 @@ func AssignGridModel(s *live.Socket) *GridModel {
 		return &GridModel{
 			Grid: domain.NewGrid(
 				domain.GridConfig{
-					MinTerms:       7,
+					MinTerms:       5,
 					MaxTerms:       12,
 					TriadMethod:    domain.TriadMethodChoice,
-					MinConstructs:  7,
+					MinConstructs:  5,
 					ConstructSteps: 4,
 				},
 			),
